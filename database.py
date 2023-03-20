@@ -9,7 +9,7 @@ sys.path.append("..")
 
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://root@localhost:3306/annotation_new"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://root@localhost:3306/annotation_database"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL

@@ -11,9 +11,9 @@ from fastapi import  FastAPI
 from database import  SessionLocal, engine
 import models
 
-
+# from schema import Filters
 from api import add_project, filters,add_classes,upload_images,del_project,assign,auth,filters,annotation_map,shapebox,roles
-from api import all_details,new_filter
+from api import all_details,new_filter,search
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -68,7 +68,8 @@ tool.include_router(shapebox.router)
 tool.include_router(roles.router)
 # tool.include_router(current_user.router)
 tool.include_router(all_details.router)
-# tool.include_router(new_filter.router)
+tool.include_router(search.router)
 # tool.include_router(authlog.router)
+
 if __name__ == "__main__":
     uvicorn.run("main:tool", port=5000,reload=True)  

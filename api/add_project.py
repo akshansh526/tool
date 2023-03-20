@@ -139,7 +139,7 @@ async def get_project_by_admin(user_id: int, db: Session = Depends(database.get_
                 print(project.project_name)
     
             if projects:
-                return {"projects":projects[0:-1]}
+                return {"projects":projects}
             else:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -290,7 +290,7 @@ async def project_status(user_id:int,db:Session =Depends(database.get_db)):
     print("******>>>>>>>>>>**********",approved_count1)
     
     print("****************",project_count1)
-    if projects:
+    if approved_count2:
             return {
                 "active_projects":[projects for projects in project_count1],
                 "approved_projects":[app for app in approved_count2],

@@ -127,13 +127,15 @@ async def get_all_assign_details(user_id:int,db: Session = Depends(database.get_
     assigned = db.query(models.Assign_to).filter(models.Assign_to.user_id==user_id).all()
     assigned_image_count=db.query(models.Assign_to.image_id).filter(models.Assign_to.user_id==user_id).count()
     for assign in assigned:
-        print(assign.assign_id)
+                 print(assign.assign_id)
     if assigned:
-            return {"assigned":assigned[0:-1]}
+            return {
+                "assigned":assigned
+                    }
     else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"no details found  with this user id {user_id} is not available",)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"no details found  with this user id {user_id} is not available",)
 
 
 @router.post("/reviewer_mapping/{user_id}")
@@ -141,87 +143,61 @@ async def reviewer_mapping(
     
     user_id:int, 
     assign_details: schema.Assign.Reviewer,
-    user_name:schema.User.User_map, 
     db: Session = Depends(database.get_db)
 ):      
 
         
         assign_models=models.Map_reviewer()
-        assign_models.user_id=user_id        
-        user_lists=assign_details.reviewer_id 
-        user_len=len(user_lists)
-        
-        user_dict={}
-        j=0           
-        for k,i in enumerate(user_lists):
-            print(">>>>>>>",k)
-            print(">>>>>>>",i)
-            if k<(user_len-1):  
-                list=[]
-                print("############",i,k)
-                print(type(i))
-                
-                k=k
+        users_list=assign_details.annotator_user_id
 
-                
-                    
-                user_dict[i]=list
-                list=[]
-        
-
+        print("****************",users_list)
 
         
         values_to_insert=[]
-        for key in user_dict.keys():
-             print("@@@@@@",key)
-             values_to_insert.append(models.Map_reviewer(reviewer_id=key,user_id=user_id))
-             for img in user_dict[key]:
-                    print("*****",img)
-                    
-
-    
-       
-
+        for key in users_list:
+                print("@@@@@@",key)
+                values_to_insert.append(
+                       models.Map_reviewer(annotator_user_id=key,reviewer_id=assign_details.reviewer_id)
+                                       )
         db.add_all(values_to_insert)
-        db.commit()
-
+        db.commit()       
+        return {"reveiwers":values_to_insert}
         
 
-        
 
+@router.get("/get_details_by_reviewer/{reviewer_id}")
+async def get_details_by_reviewer(reviewer_id:Optional[int],db: Session = Depends(database.get_db)):
 
+    reviewers = db.query(models.Map_reviewer).filter(models.Map_reviewer.reviewer_id==reviewer_id).all()
     
-       
-
-       
-        return JSONResponse(content=user_dict)
-        
-
-
-@router.get("/get_all_reviewers_details/{user_id}/{reviewer_id}")
-async def get_all_reviewers_details(user_id:int,reviewer_id:Optional[int],db: Session = Depends(database.get_db)):
-
-    reviewers = db.query(models.Map_reviewer).filter(models.Map_reviewer.user_id==user_id).all()
-    reviewers_count=db.query(models.Map_reviewer.reviewer_id).filter(models.Map_reviewer.reviewer_id==reviewer_id).count()
-    reviewers_count2=db.query(models.Map_reviewer.reviewer_id).filter(models.Map_reviewer.reviewer_id==reviewer_id).scalar()
-    # reviewers_count3= reviewers_count.union(reviewers_count2)
-    # print("reviewer",reviewers_count3)
     for re in reviewers:
-        print(re.reviewer_id)
+                print(re.reviewer_id)
     if reviewers:
-                return {"reviewers":reviewers[0:-1]}
+                return {
+                    "reviewers":reviewers
+                       }
     else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f" {user_id} is not found",)
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f" {user_id} is not found",)
     
-   
 
-@router.post("/qc_mapping/{user_id}")
-async def qc_mapping(user_id:int,qc_details:schema.Qc.Qc_assign,db:Session=Depends(database.get_db)):
-     qc_model=models.QC_Assigned()
-     qc_model.user_id=qc_details.user_id
 
-     db.commit()
-     db.add(qc_model)
-     return JSONResponse(status_code=201,content="Qc Assigned Successfully")
+
+
+@router.get("/get_annotations_by_user/{user_id}")
+async def annot_by_user(user_id: int, db: Session = Depends(database.get_db)):
+    image_list = (
+        db.query(models.Assign_to)
+        .filter(models.Assign_to.user_id == user_id)
+        .all()
+    )
+    print("################",image_list)
+    if image_list:
+                   return {
+                    "images_list":[images.image_id for images in image_list]
+                           }
+    else:
+                    raise HTTPException(
+                            status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"no images assigned with this {user_id} user_id ")

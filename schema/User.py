@@ -48,7 +48,7 @@ class User(BaseModel):
 
 class User_get(BaseModel):
     user_id:int
-    
+    first_name:str
     class Config:
         orm_mode = True
 

@@ -27,8 +27,7 @@ async def AddClasses(
     add_class: schema.Classes.Add_classes,
     db: Session = Depends(database.get_db),
 ):
-        # class_map=db.query(models.Add_classes).filter(models.Add_classes.project_id==project_id).first()
-        # user_map=db.query(models.Add_classes).filter(models.Add_classes.user_id==user_id).first()
+       
         add_class_model = models.Add_classes()
         add_class_model.user_id=user_id
         add_class_model.project_id=project_id
@@ -43,13 +42,12 @@ async def AddClasses(
 
 @router.get("/all_classes/{project_id}")
 async def get_all_classes_by_project_id(project_id:int,db: Session = Depends(database.get_db)):
-    # projects = db.query(models.Add_project).all()
+    
     classes = db.query(models.Add_classes.class_name).filter(models.Add_classes.project_id==project_id).all()
     for classes_name in classes:
         print(classes_name.class_name)
     print(">>>>>>>>>>>>>>>>>>", classes)
-    # if classes is None:
-    #     return JSONResponse(status_code=404, content="No project found with this id")
+    
     if classes:
             return {"classes_list":classes[0:-1]}
     else:
@@ -57,17 +55,6 @@ async def get_all_classes_by_project_id(project_id:int,db: Session = Depends(dat
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"no details found  with this user id {project_id} is not available",)
 
-
-# @router.get("/{class_id}", response_model=schema.Classes.Classes_get)
-# async def get_class_by_project_id(class_id: int, db: Session = Depends(database.get_db)):
-#     classes = (
-#         db.query(models.Add_classes)
-#         .filter(models.Add_classes.class_id == class_id)
-#         .first()
-#     )
-#     if classes is None:
-#         return JSONResponse(status_code=404, content="No project found with this id")
-#     return classes
 
 
 @router.delete("/delete/{class_id}")

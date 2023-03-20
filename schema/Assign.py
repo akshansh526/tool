@@ -6,7 +6,6 @@ from schema.Upload_images import ImagesIn
 from schema.Project import Project_get
 from sqlalchemy.dialects.postgresql import ARRAY
 
-
 class AssignIn(BaseModel):
     user_id:int
     project_id:int
@@ -35,8 +34,8 @@ class GetAssignDetails(BaseModel):
 
 
 class Reviewer(BaseModel):
-    reviewer_id:List[int]
-    user_id:Optional[int]
+    reviewer_id:Optional[int] = None
+    annotator_user_id:List[int]
 
     class Config:
         orm_mode=True        

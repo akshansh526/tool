@@ -33,10 +33,16 @@ async def get_all_project_by_project_id(project_id: int,user_id:int, db: Session
         .first()
     )
     
-    # if project_det.__dict__:
-    #              return {"projects":project_det,"images":image_path,"assigned":assign,"users":user}
-             
-    # else:
-    #         raise HTTPException(
-    #             status_code=status.HTTP_404_NOT_FOUND,
-    #             detail=f"image with associated with this project id {project_id} is not found please upload images",)
+    if project_det:
+                 return {"projects":project_det}
+    if image_path:
+                 return {"images":image_path}
+    if assign:
+                 return {"assigned":assign}
+    if user:
+                 return {"users":user}
+                                                   
+    else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"image with associated with this project id {project_id} is not found please upload images",)

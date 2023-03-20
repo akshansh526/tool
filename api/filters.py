@@ -6,7 +6,7 @@ from typing import List
 import models
 import schema.Project, schema.User, schema.Upload_images, schema.Classes
 import database
-
+# import schema.ProjectsOut,schema.ImagesFilter,schema.ImageOut,schema.ProjectFilter
 
 
 
@@ -14,7 +14,7 @@ import database
 router = APIRouter(prefix="/filter_projects", tags=["filter_projects"])
 
 
-@router.get("/filter_projects_name/{user_id}", response_model=List[schema.Project.ProjectFilter])
+@router.post("/filter_projects_name/{user_id}", response_model=List[schema.Project.ProjectFilter])
 async def filter_projects(
     user_id: int,
     filters: schema.Project.ProjectFilter,
@@ -46,3 +46,26 @@ async def filter_projects(
     return filter_data
 
 
+
+# @router.get("/projects", response_model=List[ProjectsOut])
+# async def get_users(
+#     project_filter: ProjectFilter = FilterDepends(ProjectFilter),
+#     db:Session = Depends(get_db),
+# ) -> Any:
+#     query = select(models.Add_project).join(models.Annotation_master)
+#     query = project_filter.filter(query)
+#     query = project_filter.sort(query)
+#     result =  db.execute(query)
+#     return result.scalars().all()
+
+
+# @router.get("/images", response_model=List[ImageOut])
+# async def get_images(
+#     image_filter: ImagesFilter = FilterDepends(with_prefix("my_prefix", ImagesFilter), by_alias=True),
+#     db:Session = Depends(get_db),
+# ) -> Any:
+#     query = select(models.Annotation_master)
+#     query = image_filter.filter(query)
+#     query = image_filter.sort(query)
+#     result = db.execute(query)
+#     return result.scalars().all()

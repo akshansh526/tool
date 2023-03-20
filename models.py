@@ -10,6 +10,11 @@ from sqlalchemy.schema import Column
 from database import engine, Base
 import datetime
 import sys
+
+from sqlalchemy import Column, Integer, JSON
+from sqlalchemy.ext.declarative import declarative_base
+from typing import List, Dict
+import json
 import uuid
 sys.path.append("..")
 
@@ -19,7 +24,7 @@ Base.metadata.create_all(engine)
 class Annotation_master(Base):
      __tablename__='annotation_master'
      
-     image_id=Column(Integer, primary_key=True, index=True)
+     image_id=Column(Integer, primary_key=True)
      image_url=Column(String(255))
      project_id=Column(Integer,ForeignKey('add_project.project_id'))
      user_id=Column(Integer, ForeignKey('user_details.user_id'))
@@ -35,9 +40,9 @@ class Annotation_master(Base):
 
 class Map_reviewer(Base):
     __tablename__="map_reviewer"
-    map_reviewer=Column(Integer, primary_key=True, index=True)
+    map_reviewer_id=Column(Integer, primary_key=True, index=True)
     reviewer_id=Column(Integer)
-    user_id=Column(Integer,ForeignKey('user_details.user_id'))
+    annotator_user_id=Column(Integer,ForeignKey('user_details.user_id'))
     date=Column(DateTime,default=func.now())     
      
      
@@ -91,16 +96,7 @@ class Delete_project_map(Base):
     date_of_deletion=Column(DateTime,default=func.now())
 
 
-# class Industry(Base):
-#     __tablename__= 'industry'
-#     industries_id=Column(Integer, primary_key=True, index=True)
-#     industry_name=Column(String(255))
-#     industry_description=Column(String(255))
-#     user_id=Column(Integer, ForeignKey('user_details.user_id'))
-    
 
-    
-    # User_industry=relationship("User_details")
     
 
 
@@ -158,7 +154,13 @@ class Image_annotation_mapping(Base):
     user_id=Column(Integer,ForeignKey('user_details.user_id'))
     class_id=Column(Integer,ForeignKey('add_classes.class_id'))
 
-    
+@property
+def class_coord_list(self) -> List[Dict[str, List[float]]]:
+    return json.loads(self.class_coord)
+
+@class_coord_list.setter
+def class_coord_list(self, value: List[Dict[str, List[float]]]) -> None:
+    self.class_coord = json.dumps(value)    
 
 class Add_classes(Base):
     __tablename__='add_classes'
@@ -219,7 +221,7 @@ class Roles(Base):
 class User_details(Base):
     __tablename__='user_details'
         
-    user_id=Column(Integer,primary_key=True,index=True)
+    user_id=Column(Integer,primary_key=True)
     first_name=Column(String(255))
     last_name=Column(String(255))
     email=Column(String(255))

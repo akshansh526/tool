@@ -1,116 +1,94 @@
-import logging
-from typing import Any, AsyncIterator, List, Optional
-from models import Annotation_master,User_details
-import uvicorn
-from faker import Faker
-from fastapi import Depends, FastAPI, Query
-from pydantic import BaseModel, Field
-from sqlalchemy import Column, ForeignKey, Integer, String, event, select
-from sqlalchemy.engine import Engine
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-
-from fastapi_filter import FilterDepends, with_prefix
-from fastapi_filter.contrib.sqlalchemy import Filter 
-
-# logger = logging.getLogger("uvicorn")
+# from sqlalchemy.orm import Mapped, declarative_base, relationship
+# from fastapi_filter import FilterDepends, with_prefix
+# from fastapi_filter.contrib.sqlalchemy import Filter
+# from typing import Any, AsyncIterator, List, Optional
+# import click
+# import uvicorn
+# from faker import Faker
+# from fastapi import Depends, FastAPI, Query,APIRouter
+# from pydantic import BaseModel, Field
+# from sqlalchemy import Column, ForeignKey, Integer, String, event, select
+# from sqlalchemy.engine import Engine
 
 
-# @event.listens_for(Engine, "connect")
-# def _set_sqlite_case_sensitive_pragma(dbapi_con, connection_record):
-#     cursor = dbapi_con.cursor()
-#     cursor.execute("PRAGMA case_sensitive_like=ON;")
-#     cursor.close()
+# from sqlalchemy import create_engine
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
+# import sys
+# # from utils.utils import CustomQuery
+# from sqlalchemy import select,insert
+# from utils import CustomQuery
 
 
-# engine = create_async_engine("sqlite+aiosqlite:///fastapi_filter.sqlite")
 
-# async_session = sessionmaker(engine, class_=AsyncSession)
+# from fastapi import Depends, APIRouter,status
+# from starlette.responses import JSONResponse
+# from sqlalchemy.orm import Session
+# import schema.Project
+# import schema.User
+# import schema.Annotation
+# import models
+# import database
+# import sys
+# import sqlalchemy.exc
+# import sys
+# from sqlalchemy import update, func, bindparam
+# from starlette.exceptions import HTTPException
 
-# Base = declarative_base()
-
-
-# class Address(Base):
-#     __tablename__ = "addresses"
-
-#     id = Column(Integer, primary_key=True, autoincrement=True)
-#     street = Column(String, nullable=False)
-#     city = Column(String, nullable=False)
-#     country = Column(String, nullable=False)
-
-
-# class User(Base):
-#     __tablename__ = "users"
-
-#     id = Column(Integer, primary_key=True, autoincrement=True)
-#     name = Column(String, nullable=False)
-#     email = Column(String, nullable=False)
-#     age = Column(Integer, nullable=False)
-#     address_id = Column(Integer, ForeignKey("addresses.id"), nullable=True)
-#     address: Address = relationship(Address, backref="users", lazy="joined")
+# router = APIRouter(prefix='/filters', tags=['filters'])
 
 
-class ProjectsOut(BaseModel):
-    project_id: int
-    project_name: str
 
-    class Config:
-        orm_mode = True
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 
-class ImagesOut(BaseModel):
-    image_id: int
-    user_id:int
-    project_id:int
-    image_url: str
 
-    class Config:
-        orm_mode = True
+# class ProjectsOut(BaseModel):
+#     project_id:int
+#     project_name:str
 
-class UserIn(BaseModel):
-    first_name: str
-    last_name:str
-    email: str
     
+#     class Config:
+#         orm_mode = True
 
 
-class UserOut(UserIn):
-    user_id: int
-    project_id: Optional[ProjectsOut]
-    image_id:Optional[ImagesOut]
+# class ImageOut(ProjectsOut):
+#     image_id:int
+#     projects:Optional[ProjectsOut]
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
+
+# class ImagesFilter(Filter):
+#     image_url: Optional[str]
+#     custom_order_by: Optional[List[str]]
+#     custom_search: Optional[str]
+
+#     class Constants(Filter.Constants):
+#         model = models.Annotation_master()
+#         ordering_field_name = "custom_order_by"
+#         search_field_name = "custom_search"
+#         search_model_fields = ["image_url"]
 
 
-class ImageFilter(Filter):
-    user_id:Optional[int]
-    project_id:Optional[int]
-    image_id: Optional[List[int]]
-    custom_order_by: Optional[List[str]]
-    custom_search: Optional[str]
+# class ProjectFilter(Filter):
+#     project_name: Optional[str]
+#     project_name__ilike: Optional[str]
+#     project_name__like: Optional[str]
+#     project_name__neq: Optional[str]
+#     image_url: Optional[ImagesFilter] = FilterDepends(with_prefix("images", ImagesFilter))
+#     age__lt: Optional[int]
+#     order_by: List[str] = ["image_url"]
+#     search: Optional[str]
 
-    class Constants(Filter.Constants):
-        model = Annotation_master
-        ordering_field_name = "custom_order_by"
-        search_field_name = "custom_search"
-        search_model_fields = ["user_id", "project_id", "image_id","image_url"]
+#     class Constants(Filter.Constants):
+#         model = models.Add_project()
+#         search_model_fields = ["project_name"]
 
-    class Config:
-        orm_mode = True 
 
-class UserFilter(Filter):
-    name: Optional[str]
-    name__ilike: Optional[str]
-    name__like: Optional[str]
-    name__neq: Optional[str]
-    address: Optional[ImageFilter] = FilterDepends(with_prefix("images", ImageFilter))
-  
-    order_by: List[str] = ["name"]
-    search: Optional[str]
-
-    class Constants(Filter.Constants):
-        model = User_details
-        search_model_fields = ["name"]
 

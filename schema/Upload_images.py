@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List,Optional
 import datetime
 
 class ImagesIn(BaseModel):
@@ -10,7 +10,12 @@ class ImagesIn(BaseModel):
     class Config:
         orm_mode = True
 
-
+class Rename_image(BaseModel):
+    image_name:Optional[str] = None
+    image_url:Optional[str] = None
+    class Config:
+        orm_mode = True
+    
 class ImageOut(ImagesIn):
     image_id:int
     image_url: str

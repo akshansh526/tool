@@ -58,12 +58,7 @@ async def get_all_shapeboxes( db: Session = Depends(database.get_db)):
         return JSONResponse(status_code=404, content='No anonotations found with this id')
     return annotations
 
-@router.get('/get_annotations_by_user/{user_id}',response_model=schema.Annotation.GetAnnotation)  
-async def annot_by_user(user_id: int, db: Session = Depends(database.get_db)): 
-        classes = db.query(models.Image_annotation_mapping).filter(models.Image_annotation_mapping.user_id == user_id).first()
-        if classes is None:
-            return JSONResponse(status_code=404, content='No project found with this id')
-        return classes
+
 
 
 @router.delete('/delete/{shapebox_id}')
